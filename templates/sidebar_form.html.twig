@@ -1,0 +1,7 @@
+<section class="content-body">
+{{ form_start(form, {action: path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|default({})|merge(app.request.query.all))}) }}
+{% for field in form %}
+    {{ form_row(field) }}
+{% endfor %}
+{{ form_end(form) }}
+</section>

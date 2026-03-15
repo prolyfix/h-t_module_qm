@@ -105,7 +105,7 @@ class LinkedEntityCrudController extends BaseCrudController
             ]);
         }
 
-        return $this->render('qm/sidebar_form.html.twig', [
+        return $this->render('@ProlyfixQm/sidebar_form.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -160,7 +160,7 @@ class LinkedEntityCrudController extends BaseCrudController
             ]);
         }
 
-        return $this->render('qm/sidebar_form.html.twig', [
+        return $this->render('@ProlyfixQm/sidebar_form.html.twig', [
             'form' => $form->createView(),
         ]);
     }

@@ -48,8 +48,8 @@ class ParagraphCrudController extends BaseCrudController
         return $crud
             ->setPageTitle('index', 'QM Paragraphs')
             ->setDefaultSort(['title' => 'ASC'])
-            ->overrideTemplate('crud/detail', 'qm/paragraph_detail.html.twig')
-            ->overrideTemplate('crud/index', 'qm/paragraph_index.html.twig');
+            ->overrideTemplate('crud/detail', '@ProlyfixQm/paragraph_detail.html.twig')
+            ->overrideTemplate('crud/index', '@ProlyfixQm/paragraph_index.html.twig');
     }
 
     public function configureResponseParameters(KeyValueStore $responseParameters): KeyValueStore
