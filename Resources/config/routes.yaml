@@ -1,0 +1,4 @@
+prolyfix_qm_controllers:
+  resource: '@ProlyfixQmBundle/Controller/'
+  type: attribute
+  prefix: /
