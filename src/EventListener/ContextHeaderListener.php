@@ -2,12 +2,17 @@
 
 namespace Prolyfix\QmBundle\EventListener;
 
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Prolyfix\HolidayAndTime\Entity\Module\Module;
+use Prolyfix\HolidayAndTime\Entity\Module\ModuleConfigurationValue;
 use Prolyfix\HolidayAndTime\Event\ModifiableArrayEvent;
 use Prolyfix\QmBundle\Controller\Admin\ParagraphCrudController;
 use Prolyfix\QmBundle\Entity\Paragraph;
+use Prolyfix\QmBundle\ProlyfixQmBundle;
 use Prolyfix\QmBundle\Repository\LinkedEntityRepository;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -18,6 +23,8 @@ class ContextHeaderListener
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly AdminUrlGenerator $adminUrlGenerator,
         private readonly RequestStack $requestStack,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly Security $security
     ) {
     }
 
@@ -25,6 +32,13 @@ class ContextHeaderListener
     {
         $data = $event->getData();
         $entity = $data['entity'] ?? null;
+
+        $module = $this->entityManager->getRepository(Module::class)->findOneBy(['class' => ProlyfixQmBundle::class]);
+        if(!$this->entityManager->getRepository(ModuleConfigurationValue::class)->hasModuleEnabled($this->security->getUser()->getCompany(),$module ))
+        {
+            return;
+        }
+
         if (!\is_object($entity) || !method_exists($entity, 'getId')) {
             return;
         }

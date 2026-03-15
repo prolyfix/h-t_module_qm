@@ -1,122 +1,147 @@
 {% extends '@EasyAdmin/crud/index.html.twig' %}
 
 {% block main %}
-<div class="card mt-2">
-    <div class="card-header d-flex align-items-center gap-2" style="background-color:#f672a7;color:#fff;">
-        <i class="fas fa-book me-1"></i>
-        <strong>Table of Contents</strong>
-        {% if rootParagraphs is defined %}
-            <span class="badge bg-white ms-auto" style="color:#f672a7;">
-                {{ rootParagraphs|length }} chapter{{ rootParagraphs|length != 1 ? 's' : '' }}
-            </span>
-        {% endif %}
-    </div>
-    <div class="card-body p-3">
-        {% if rootParagraphs is defined and rootParagraphs|length > 0 %}
-            <div class="qm-toc">
-                {% for i, paragraph in rootParagraphs %}
-                    <div class="qm-toc-group mb-1">
-                        <a href="{{ ea_url().setController('Prolyfix\\QmBundle\\Controller\\Admin\\ParagraphCrudController').setEntityId(paragraph.id).setAction('detail') }}"
-                           class="qm-toc-chapter">
-                            <span class="qm-toc-num">{{ i + 1 }}.</span>
-                            <span class="qm-toc-title">{{ paragraph.title }}</span>
-                            <span class="qm-toc-dots"></span>
-                            {% if paragraph.filename %}
-                                <i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
-                            {% endif %}
-                            {% if paragraph.description %}
-                                <i class="fas fa-align-left qm-toc-icon ms-1" title="Has description"></i>
-                            {% endif %}
-                        </a>
-                        {% if paragraph.children|length > 0 %}
-                            {% for j, child in paragraph.children|sort((a, b) => a.title <=> b.title) %}
-                                <a href="{{ ea_url().setController('Prolyfix\\QmBundle\\Controller\\Admin\\ParagraphCrudController').setEntityId(child.id).setAction('detail') }}"
-                                   class="qm-toc-section">
-                                    <span class="qm-toc-num">{{ i + 1 }}.{{ j + 1 }}</span>
-                                    <span class="qm-toc-title">{{ child.title }}</span>
-                                    <span class="qm-toc-dots"></span>
-                                    {% if child.filename %}
-                                        <i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
-                                    {% endif %}
-                                    {% if child.description %}
-                                        <i class="fas fa-align-left qm-toc-icon ms-1" title="Has description"></i>
-                                    {% endif %}
-                                </a>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="text-muted py-3 text-center">
-                <i class="fas fa-book-open me-2"></i>No paragraphs found. Use the <strong>Add Paragraph</strong> button above.
-            </p>
-        {% endif %}
-    </div>
-</div>
+	<div class="card mt-2">
+		<div class="card-header d-flex align-items-center gap-2" style="background-color:#f672a7;color:#fff;">
+			<i class="fas fa-book me-1"></i>
+			<strong>Table of Contents</strong>
+			{% if rootParagraphs is defined %}
+				<span class="badge bg-white ms-auto" style="color:#f672a7;">
+					{{ rootParagraphs|length }}
+					chapter{{ rootParagraphs|length != 1 ? 's' : '' }}
+				</span>
+			{% endif %}
+		</div>
+		<div class="card-body p-3">
+			{% if rootParagraphs is defined and rootParagraphs|length > 0 %}
+				<div class="qm-toc">
+					{% for i, paragraph in rootParagraphs %}
+						<div class="qm-toc-group mb-1">
+							<a href="{{ ea_url().setController('Prolyfix\\QmBundle\\Controller\\Admin\\ParagraphCrudController').setEntityId(paragraph.id).setAction('detail') }}" class="qm-toc-chapter">
+								<span class="qm-toc-num">{{ i + 1 }}.</span>
+								<span class="qm-toc-title">{{ paragraph.title }}</span>
+								<span class="qm-toc-dots"></span>
+								{% if paragraph.filename %}
+									<i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
+								{% endif %}
+								{% if paragraph.description %}
+									<i class="fas fa-align-left qm-toc-icon ms-1" title="Has description"></i>
+								{% endif %}
+							</a>
+							{% if paragraph.children|length > 0 %}
+								{% for j, child in paragraph.children|sort((a, b) => a.title <=> b.title) %}
+									<a href="{{ ea_url().setController('Prolyfix\\QmBundle\\Controller\\Admin\\ParagraphCrudController').setEntityId(child.id).setAction('detail') }}" class="qm-toc-section">
+										<span class="qm-toc-num">{{ i + 1 }}.{{ j + 1 }}</span>
+										<span class="qm-toc-title">{{ child.title }}</span>
+										<span class="qm-toc-dots"></span>
+										{% if child.filename %}
+											<i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
+										{% endif %}
+										{% if child.description %}
+											<i class="fas fa-align-left qm-toc-icon ms-1" title="Has description"></i>
+										{% endif %}
+									</a>
+									{% if child.children|length > 0 %}
+										{% for k, grandchild in child.children|sort((a, b) => a.title <=> b.title) %}
+											<a href="{{ ea_url().setController('Prolyfix\\QmBundle\\Controller\\Admin\\ParagraphCrudController').setEntityId(grandchild.id).setAction('detail') }}" class="qm-toc-section" style="margin-left:2em">
+												<span class="qm-toc-num">{{ i + 1 }}.{{ j + 1 }}.{{ k + 1 }}</span>
+												<span class="qm-toc-title">{{ grandchild.title }}</span>
+												<span class="qm-toc-dots"></span>
+												{% if child.filename %}
+													<i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
+												{% endif %}
+												{% if child.description %}
+													<i class="fas fa-align-left qm-toc-icon ms-1" title="Has description"></i>
+												{% endif %}
+											</a>
+										{% endfor %}
+									{% endif %}
+								{% endfor %}
+							{% endif %}
+						</div>
+					{% endfor %}
+				</div>
+			{% else %}
+				<p class="text-muted py-3 text-center">
+					<i class="fas fa-book-open me-2"></i>No paragraphs found. Use the
+					<strong>Add Paragraph</strong>
+					button above.
+				</p>
+			{% endif %}
+		</div>
+	</div>
 
-<style>
-.qm-toc { font-size: 1rem; }
-.qm-toc-group { border-bottom: 1px solid #f5e0ed; padding-bottom: 0.25rem; }
-.qm-toc-group:last-child { border-bottom: none; }
+	<style>
+		.qm-toc {
+			font-size: 1rem;
+		}
+		.qm-toc-group {
+			border-bottom: 1px solid #f5e0ed;
+			padding-bottom: 0.25rem;
+		}
+		.qm-toc-group:last-child {
+			border-bottom: none;
+		}
 
-.qm-toc-chapter,
-.qm-toc-section {
-    display: flex;
-    align-items: baseline;
-    text-decoration: none;
-    color: inherit;
-    padding: 0.4rem 0.6rem;
-    border-radius: 5px;
-    transition: background 0.15s;
-}
-.qm-toc-chapter:hover,
-.qm-toc-section:hover {
-    background: #fce4f0;
-    color: #f672a7;
-    text-decoration: none;
-}
+		.qm-toc-chapter,
+		.qm-toc-section {
+			display: flex;
+			align-items: baseline;
+			text-decoration: none;
+			color: inherit;
+			padding: 0.4rem 0.6rem;
+			border-radius: 5px;
+			transition: background 0.15s;
+		}
+		.qm-toc-chapter:hover,
+		.qm-toc-section:hover {
+			background: #fce4f0;
+			color: #f672a7;
+			text-decoration: none;
+		}
 
-.qm-toc-chapter {
-    font-weight: 600;
-    font-size: 1rem;
-}
-.qm-toc-section {
-    font-size: 0.9rem;
-    padding-left: 2.75rem;
-    color: #555;
-}
+		.qm-toc-chapter {
+			font-weight: 600;
+			font-size: 1rem;
+		}
+		.qm-toc-section {
+			font-size: 0.9rem;
+			padding-left: 2.75rem;
+			color: #555;
+		}
 
-.qm-toc-num {
-    color: #f672a7;
-    font-weight: bold;
-    min-width: 3.5rem;
-    flex-shrink: 0;
-}
-.qm-toc-section .qm-toc-num {
-    color: #bbb;
-    font-weight: normal;
-    min-width: 3.5rem;
-}
+		.qm-toc-num {
+			color: #f672a7;
+			font-weight: bold;
+			min-width: 3.5rem;
+			flex-shrink: 0;
+		}
+		.qm-toc-section .qm-toc-num {
+			color: #bbb;
+			font-weight: normal;
+			min-width: 3.5rem;
+		}
 
-.qm-toc-title { flex-shrink: 0; }
+		.qm-toc-title {
+			flex-shrink: 0;
+		}
 
-.qm-toc-dots {
-    flex: 1;
-    border-bottom: 1.5px dotted #e0c8da;
-    margin: 0 0.75rem;
-    align-self: center;
-    min-width: 1rem;
-}
+		.qm-toc-dots {
+			flex: 1;
+			border-bottom: 1.5px dotted #e0c8da;
+			margin: 0 0.75rem;
+			align-self: center;
+			min-width: 1rem;
+		}
 
-.qm-toc-icon {
-    color: #d0a0c0;
-    font-size: 0.8rem;
-    flex-shrink: 0;
-}
-.qm-toc-chapter:hover .qm-toc-icon,
-.qm-toc-section:hover .qm-toc-icon {
-    color: #f672a7;
-}
-</style>
+		.qm-toc-icon {
+			color: #d0a0c0;
+			font-size: 0.8rem;
+			flex-shrink: 0;
+		}
+		.qm-toc-chapter:hover .qm-toc-icon,
+		.qm-toc-section:hover .qm-toc-icon {
+			color: #f672a7;
+		}
+	</style>
 {% endblock %}
