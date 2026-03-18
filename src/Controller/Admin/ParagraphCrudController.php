@@ -36,6 +36,8 @@ class ParagraphCrudController extends BaseCrudController
             CollectionField::new('actions')
                 ->setEntryType(ActionType::class)
                 ->setFormTypeOption('by_reference', false)
+                ->allowAdd()
+                ->allowDelete()
                 ->hideOnIndex()
                 ->setLabel('Actions'),
         ];

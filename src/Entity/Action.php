@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Prolyfix\HolidayAndTime\Entity\TimeData;
 use Prolyfix\QmBundle\Repository\ActionRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ActionRepository::class)]
 #[ORM\Table(name: 'qm_action')]
@@ -32,6 +33,7 @@ class Action extends TimeData
     private ?string $hint = null;
 
     #[ORM\Column(options: ['default' => false])]
+    #[Groups(['module_configuration_value:read', 'module_configuration_value:write'])]
     private bool $done = false;
 
     public function __construct()

@@ -6,6 +6,7 @@
     </h1>
     {{ entity.instance.description|raw }}
 
+    {% if entity.instance.children|length > 0 %}
     <div class="card mt-4">
         <div class="card-header d-flex align-items-center gap-2" style="background-color:#f672a7;color:#fff;">
             <i class="fas fa-sitemap"></i>
@@ -17,30 +18,122 @@
             </span>
         </div>
         <div class="card-body p-0">
-            {% if entity.instance.children|length > 0 %}
-                <div class="list-group list-group-flush">
-                    {% for child in entity.instance.children|sort((a, b) => (a.creationDate ? a.creationDate|date('U') : 0) <=> (b.creationDate ? b.creationDate|date('U') : 0)) %}
-                        <a href="{{ ea_url().setController('Prolyfix\\QmBundle\\Controller\\Admin\\ParagraphCrudController').setEntityId(child.id).setAction('detail') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-                            <span class="me-2" style="color:#f672a7;"><i class="fas fa-angle-right"></i></span>
-                            <span class="flex-grow-1">{{ child.title }}</span>
-                            {% if child.totalActionsCount > 0 %}
-                                <span class="badge rounded-pill bg-light text-dark me-2">{{ child.doneActionsCount }}/{{ child.totalActionsCount }}</span>
-                            {% endif %}
-                            <small class="text-muted">{{ child.creationDate ? child.creationDate|date('Y-m-d H:i') : '' }}</small>
-                        </a>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="p-3 text-muted d-flex align-items-center gap-2">
-                    <i class="fas fa-info-circle"></i>
-                    No child paragraphs.
-                </div>
-            {% endif %}
+            <div class="list-group list-group-flush">
+                {% for child in entity.instance.children|sort((a, b) => (a.creationDate ? a.creationDate|date('U') : 0) <=> (b.creationDate ? b.creationDate|date('U') : 0)) %}
+                    <a href="{{ ea_url().setController('Prolyfix\\QmBundle\\Controller\\Admin\\ParagraphCrudController').setEntityId(child.id).setAction('detail') }}" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <span class="me-2" style="color:#f672a7;"><i class="fas fa-angle-right"></i></span>
+                        <span class="flex-grow-1">{{ child.title }}</span>
+                        {% if child.totalActionsCount > 0 %}
+                            <span class="badge rounded-pill bg-light text-dark me-2">{{ child.doneActionsCount }}/{{ child.totalActionsCount }}</span>
+                        {% endif %}
+                        <small class="text-muted">{{ child.creationDate ? child.creationDate|date('Y-m-d H:i') : '' }}</small>
+                    </a>
+                {% endfor %}
+            </div>
         </div>
     </div>
+    {% endif %}
+
+    {% if entity.instance.totalActionsCount > 0 %}
+    <div class="card mt-4">
+        <div class="card-header d-flex align-items-center gap-2" style="background-color:#f672a7;color:#fff;">
+            <i class="fas fa-tasks"></i>
+            <strong>
+                Actions
+            </strong>
+            <span class="badge bg-white ms-1" style="color:#f672a7;">
+                {{ entity.instance.doneActionsCount }}/{{ entity.instance.totalActionsCount }}
+            </span>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-sm table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-center" style="width:70px;">Done</th>
+                        <th>Indication</th>
+                        <th>Hint</th>
+                        <th style="width:170px;">Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for action in entity.instance.actionsOrderedByCreationDate %}
+                        <tr>
+                            <td class="text-center">
+                                <input
+                                    type="checkbox"
+                                    class="form-check-input qm-action-done-toggle"
+                                    data-action-id="{{ action.id }}"
+                                    {{ action.done ? 'checked' : '' }}
+                                >
+                            </td>
+                            <td>{{ action.indication }}</td>
+                            <td>{{ action.hint ?: '—' }}</td>
+                            <td class="text-muted">{{ action.creationDate ? action.creationDate|date('Y-m-d H:i') : '' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <script>
+    (function () {
+        async function patchActionDone(actionId, done) {
+            const response = await fetch('/api/actions/' + actionId, {
+                method: 'PATCH',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/ld+json',
+                    'Content-Type': 'application/merge-patch+json'
+                },
+                body: JSON.stringify({ done: done })
+            });
+
+            if (!response.ok) {
+                throw new Error('PATCH failed: ' + response.status);
+            }
+
+            const payload = await response.json();
+            const persistedDone = typeof payload.done === 'boolean'
+                ? payload.done
+                : (typeof payload.isDone === 'boolean' ? payload.isDone : null);
+
+            if (persistedDone === null || persistedDone !== done) {
+                throw new Error('Server validation failed');
+            }
+        }
+
+        document.addEventListener('change', function (event) {
+            const target = event.target;
+            if (!(target instanceof HTMLInputElement) || !target.classList.contains('qm-action-done-toggle')) {
+                return;
+            }
+
+            const actionId = target.dataset.actionId;
+            if (!actionId) {
+                return;
+            }
+
+            const previousValue = !target.checked;
+            const desiredValue = target.checked;
+            target.disabled = true;
+
+            patchActionDone(actionId, desiredValue)
+                .catch(function () {
+                    target.checked = previousValue;
+                    window.alert('Could not update action status.');
+                })
+                .finally(function () {
+                    target.disabled = false;
+                });
+        });
+    })();
+    </script>
 
 
     {# ── Linked documents overview ── #}
+    {% if linkedEntities is defined and linkedEntities|length > 0 %}
     <div class="card mt-4">
         <div class="card-header d-flex align-items-center gap-2" style="background-color:#f672a7;color:#fff;">
             <i class="fas fa-book-open"></i>
@@ -62,8 +155,7 @@
             {% endif %}
         </div>
         <div class="card-body p-0">
-            {% if linkedEntities is defined and linkedEntities|length > 0 %}
-                <table class="table table-hover table-sm mb-0" id="qm-linked-entities-table">
+            <table class="table table-hover table-sm mb-0" id="qm-linked-entities-table">
                     <thead class="table-light">
                         <tr>
                             <th>
@@ -135,10 +227,10 @@
                             </tr>
                         {% endfor %}
                     </tbody>
-                </table>
+            </table>
 
                 {# Client-side pagination controls (shown only when >10 rows) #}
-                {% if linkedEntities|length > 10 %}
+            {% if linkedEntities|length > 10 %}
                     <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top">
                         <small class="text-muted qm-page-info"></small>
                         <div class="btn-group btn-group-sm">
@@ -167,17 +259,8 @@
                         render();
                     })();
                     </script>
-                {% endif %}
-            {% else %}
-                <div class="p-3 text-muted d-flex align-items-center gap-2">
-                    <i class="fas fa-info-circle"></i>
-                    No documents linked to this paragraph yet. Use the
-                    <strong>
-                        Attach file
-                    </strong>
-                    button above.
-                </div>
             {% endif %}
         </div>
     </div>
+    {% endif %}
 {% endblock %}

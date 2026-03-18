@@ -24,6 +24,9 @@
 								{% if paragraph.totalActionsCount > 0 %}
 									<span class="badge rounded-pill bg-light text-dark me-2">{{ paragraph.doneActionsCount }}/{{ paragraph.totalActionsCount }}</span>
 								{% endif %}
+								{% if paragraph.linkedEntities|length > 0 %}
+									<span class="badge rounded-pill bg-light text-dark me-2"><i class="fas fa-link me-1"></i>{{ paragraph.linkedEntities|length }}</span>
+								{% endif %}
 								{% if paragraph.filename %}
 									<i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
 								{% endif %}
@@ -39,6 +42,9 @@
 										<span class="qm-toc-dots"></span>
 										{% if child.totalActionsCount > 0 %}
 											<span class="badge rounded-pill bg-light text-dark me-2">{{ child.doneActionsCount }}/{{ child.totalActionsCount }}</span>
+										{% endif %}
+										{% if child.linkedEntities|length > 0 %}
+											<span class="badge rounded-pill bg-light text-dark me-2"><i class="fas fa-link me-1"></i>{{ child.linkedEntities|length }}</span>
 										{% endif %}
 										{% if child.filename %}
 											<i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
@@ -56,6 +62,9 @@
 												{% if grandchild.totalActionsCount > 0 %}
 													<span class="badge rounded-pill bg-light text-dark me-2">{{ grandchild.doneActionsCount }}/{{ grandchild.totalActionsCount }}</span>
 												{% endif %}
+												{% if grandchild.linkedEntities|length > 0 %}
+													<span class="badge rounded-pill bg-light text-dark me-2"><i class="fas fa-link me-1"></i>{{ grandchild.linkedEntities|length }}</span>
+												{% endif %}
 												{% if grandchild.filename %}
 													<i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
 												{% endif %}
@@ -71,6 +80,9 @@
 														<span class="qm-toc-dots"></span>
 														{% if goal.totalActionsCount > 0 %}
 															<span class="badge rounded-pill bg-light text-dark me-2">{{ goal.doneActionsCount }}/{{ goal.totalActionsCount }}</span>
+														{% endif %}
+														{% if goal.linkedEntities|length > 0 %}
+															<span class="badge rounded-pill bg-light text-dark me-2"><i class="fas fa-link me-1"></i>{{ goal.linkedEntities|length }}</span>
 														{% endif %}
 														{% if goal.filename %}
 															<i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
