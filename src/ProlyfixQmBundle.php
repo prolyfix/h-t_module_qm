@@ -5,6 +5,7 @@ namespace Prolyfix\QmBundle;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use Prolyfix\HolidayAndTime\Entity\Module\ModuleRight;
 use Prolyfix\HolidayAndTime\Module\ModuleBundle;
+use Prolyfix\QmBundle\Entity\Action;
 use Prolyfix\QmBundle\Entity\LinkedEntity;
 use Prolyfix\QmBundle\Entity\Paragraph;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -58,6 +59,11 @@ class ProlyfixQmBundle extends ModuleBundle
                 ->setCoverage('company')
                 ->setRole('ROLE_MANAGER')
                 ->setEntityClass(LinkedEntity::class),
+            (new ModuleRight())
+                ->setModuleAction(['list', 'show', 'edit', 'new', 'delete'])
+                ->setCoverage('company')
+                ->setRole('ROLE_MANAGER')
+                ->setEntityClass(Action::class),
         ];
     }
 
@@ -87,6 +93,7 @@ class ProlyfixQmBundle extends ModuleBundle
         return [
             Paragraph::class,
             LinkedEntity::class,
+            Action::class,
         ];
     }
 }

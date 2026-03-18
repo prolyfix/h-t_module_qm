@@ -45,6 +45,12 @@ class Paragraph extends TimeData
     #[ORM\OneToMany(targetEntity: LinkedEntity::class, mappedBy: 'paragraph', orphanRemoval: true)]
     private Collection $linkedEntities;
 
+    /**
+     * @var Collection<int, Action>
+     */
+    #[ORM\OneToMany(targetEntity: Action::class, mappedBy: 'paragraph', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $actions;
+
     #[ORM\Column(length: 255)]
     #[SearchableField]
     private ?string $title = null;
@@ -64,6 +70,7 @@ class Paragraph extends TimeData
         parent::__construct();
         $this->children = new ArrayCollection();
         $this->linkedEntities = new ArrayCollection();
+        $this->actions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -139,6 +146,65 @@ class Paragraph extends TimeData
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Action>
+     */
+    public function getActions(): Collection
+    {
+        return $this->actions;
+    }
+
+    /**
+     * @return Collection<int, Action>
+     */
+    public function getActionsOrderedByCreationDate(): Collection
+    {
+        $actions = $this->actions->toArray();
+
+        usort($actions, static function (Action $left, Action $right): int {
+            $leftDate = $left->getCreationDate();
+            $rightDate = $right->getCreationDate();
+
+            $leftTimestamp = $leftDate?->getTimestamp() ?? 0;
+            $rightTimestamp = $rightDate?->getTimestamp() ?? 0;
+
+            return $leftTimestamp <=> $rightTimestamp;
+        });
+
+        return new ArrayCollection($actions);
+    }
+
+    public function addAction(Action $action): static
+    {
+        if (!$this->actions->contains($action)) {
+            $this->actions->add($action);
+            $action->setParagraph($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAction(Action $action): static
+    {
+        if ($this->actions->removeElement($action)) {
+            if ($action->getParagraph() === $this) {
+                $action->setParagraph(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getDoneActionsCount(): int
+    {
+        return $this->actions->filter(static fn (Action $action): bool => $action->isDone())->count();
+    }
+
+    public function getTotalActionsCount(): int
+    {
+        return $this->actions->count();
     }
 
     public function getTitle(): ?string

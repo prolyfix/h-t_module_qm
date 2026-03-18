@@ -6,10 +6,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use Prolyfix\QmBundle\Entity\LinkedEntity;
+use Prolyfix\QmBundle\Form\ActionType;
 use Prolyfix\HolidayAndTime\Controller\Admin\BaseCrudController;
 use Prolyfix\QmBundle\Entity\Paragraph;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -31,6 +33,11 @@ class ParagraphCrudController extends BaseCrudController
             AssociationField::new('parentParagraph')->renderAsNativeWidget(),
             TextField::new('title'),
             TextEditorField::new('description')->hideOnIndex(),
+            CollectionField::new('actions')
+                ->setEntryType(ActionType::class)
+                ->setFormTypeOption('by_reference', false)
+                ->hideOnIndex()
+                ->setLabel('Actions'),
         ];
 
         if (in_array($pageName, [Crud::PAGE_NEW, Crud::PAGE_EDIT], true)) {
@@ -47,7 +54,7 @@ class ParagraphCrudController extends BaseCrudController
     {
         return $crud
             ->setPageTitle('index', 'QM Paragraphs')
-            ->setDefaultSort(['title' => 'ASC'])
+            ->setDefaultSort(['creationDate' => 'ASC'])
             ->overrideTemplate('crud/detail', '@ProlyfixQm/paragraph_detail.html.twig')
             ->overrideTemplate('crud/index', '@ProlyfixQm/paragraph_index.html.twig');
     }
@@ -56,7 +63,7 @@ class ParagraphCrudController extends BaseCrudController
     {
         if ($responseParameters->get('pageName') === Crud::PAGE_INDEX) {
             $rootParagraphs = $this->em->getRepository(Paragraph::class)
-                ->findBy(['parentParagraph' => null], ['title' => 'ASC']);
+                ->findBy(['parentParagraph' => null], ['creationDate' => 'ASC']);
             $responseParameters->set('rootParagraphs', $rootParagraphs);
         }
 

@@ -8,6 +8,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Prolyfix\HolidayAndTime\Entity\Module\Module;
 use Prolyfix\HolidayAndTime\Entity\Module\ModuleConfigurationValue;
 use Prolyfix\HolidayAndTime\Event\ModifiableArrayEvent;
+use Prolyfix\QmBundle\Attribute\BelongToQm;
 use Prolyfix\QmBundle\Controller\Admin\ParagraphCrudController;
 use Prolyfix\QmBundle\Entity\Paragraph;
 use Prolyfix\QmBundle\ProlyfixQmBundle;
@@ -40,6 +41,10 @@ class ContextHeaderListener
         }
 
         if (!\is_object($entity) || !method_exists($entity, 'getId')) {
+            return;
+        }
+
+        if (!$this->hasBelongToQmAttribute($entity)) {
             return;
         }
 
@@ -92,5 +97,20 @@ class ContextHeaderListener
 
         $data['html'] = $headerHtml;
         $event->setData($data);
+    }
+
+    private function hasBelongToQmAttribute(object $entity): bool
+    {
+        $reflection = new \ReflectionClass($entity);
+
+        do {
+            if ($reflection->getAttributes(BelongToQm::class) !== []) {
+                return true;
+            }
+
+            $reflection = $reflection->getParentClass();
+        } while ($reflection !== false);
+
+        return false;
     }
 }

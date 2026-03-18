@@ -21,6 +21,9 @@
 								<span class="qm-toc-num">{{ i + 1 }}.</span>
 								<span class="qm-toc-title">{{ paragraph.title }}</span>
 								<span class="qm-toc-dots"></span>
+								{% if paragraph.totalActionsCount > 0 %}
+									<span class="badge rounded-pill bg-light text-dark me-2">{{ paragraph.doneActionsCount }}/{{ paragraph.totalActionsCount }}</span>
+								{% endif %}
 								{% if paragraph.filename %}
 									<i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
 								{% endif %}
@@ -29,11 +32,14 @@
 								{% endif %}
 							</a>
 							{% if paragraph.children|length > 0 %}
-								{% for j, child in paragraph.children|sort((a, b) => a.title <=> b.title) %}
+								{% for j, child in paragraph.children|sort((a, b) => (a.creationDate ? a.creationDate|date('U') : 0) <=> (b.creationDate ? b.creationDate|date('U') : 0)) %}
 									<a href="{{ ea_url().setController('Prolyfix\\QmBundle\\Controller\\Admin\\ParagraphCrudController').setEntityId(child.id).setAction('detail') }}" class="qm-toc-section">
 										<span class="qm-toc-num">{{ i + 1 }}.{{ j + 1 }}</span>
 										<span class="qm-toc-title">{{ child.title }}</span>
 										<span class="qm-toc-dots"></span>
+										{% if child.totalActionsCount > 0 %}
+											<span class="badge rounded-pill bg-light text-dark me-2">{{ child.doneActionsCount }}/{{ child.totalActionsCount }}</span>
+										{% endif %}
 										{% if child.filename %}
 											<i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
 										{% endif %}
@@ -42,18 +48,39 @@
 										{% endif %}
 									</a>
 									{% if child.children|length > 0 %}
-										{% for k, grandchild in child.children|sort((a, b) => a.title <=> b.title) %}
+										{% for k, grandchild in child.children|sort((a, b) => (a.creationDate ? a.creationDate|date('U') : 0) <=> (b.creationDate ? b.creationDate|date('U') : 0)) %}
 											<a href="{{ ea_url().setController('Prolyfix\\QmBundle\\Controller\\Admin\\ParagraphCrudController').setEntityId(grandchild.id).setAction('detail') }}" class="qm-toc-section" style="margin-left:2em">
 												<span class="qm-toc-num">{{ i + 1 }}.{{ j + 1 }}.{{ k + 1 }}</span>
 												<span class="qm-toc-title">{{ grandchild.title }}</span>
 												<span class="qm-toc-dots"></span>
-												{% if child.filename %}
+												{% if grandchild.totalActionsCount > 0 %}
+													<span class="badge rounded-pill bg-light text-dark me-2">{{ grandchild.doneActionsCount }}/{{ grandchild.totalActionsCount }}</span>
+												{% endif %}
+												{% if grandchild.filename %}
 													<i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
 												{% endif %}
-												{% if child.description %}
+												{% if grandchild.description %}
 													<i class="fas fa-align-left qm-toc-icon ms-1" title="Has description"></i>
 												{% endif %}
 											</a>
+											{% if grandchild.children|length > 0 %}
+												{% for g, goal in grandchild.children|sort((a, b) => (a.creationDate ? a.creationDate|date('U') : 0) <=> (b.creationDate ? b.creationDate|date('U') : 0)) %}
+													<a href="{{ ea_url().setController('Prolyfix\\QmBundle\\Controller\\Admin\\ParagraphCrudController').setEntityId(goal.id).setAction('detail') }}" class="qm-toc-goal" style="margin-left:4em">
+														<span class="qm-toc-num">Ziel {{ g + 1 }}</span>
+														<span class="qm-toc-title">{{ goal.title }}</span>
+														<span class="qm-toc-dots"></span>
+														{% if goal.totalActionsCount > 0 %}
+															<span class="badge rounded-pill bg-light text-dark me-2">{{ goal.doneActionsCount }}/{{ goal.totalActionsCount }}</span>
+														{% endif %}
+														{% if goal.filename %}
+															<i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
+														{% endif %}
+														{% if goal.description %}
+															<i class="fas fa-align-left qm-toc-icon ms-1" title="Has description"></i>
+														{% endif %}
+													</a>
+												{% endfor %}
+											{% endif %}
 										{% endfor %}
 									{% endif %}
 								{% endfor %}
@@ -84,7 +111,8 @@
 		}
 
 		.qm-toc-chapter,
-		.qm-toc-section {
+		.qm-toc-section,
+		.qm-toc-goal {
 			display: flex;
 			align-items: baseline;
 			text-decoration: none;
@@ -94,7 +122,8 @@
 			transition: background 0.15s;
 		}
 		.qm-toc-chapter:hover,
-		.qm-toc-section:hover {
+		.qm-toc-section:hover,
+		.qm-toc-goal:hover {
 			background: #fce4f0;
 			color: #f672a7;
 			text-decoration: none;
@@ -109,6 +138,11 @@
 			padding-left: 2.75rem;
 			color: #555;
 		}
+		.qm-toc-goal {
+			font-size: 0.88rem;
+			padding-left: 3.75rem;
+			color: #666;
+		}
 
 		.qm-toc-num {
 			color: #f672a7;
@@ -120,6 +154,11 @@
 			color: #bbb;
 			font-weight: normal;
 			min-width: 3.5rem;
+		}
+		.qm-toc-goal .qm-toc-num {
+			color: #999;
+			font-weight: normal;
+			min-width: 5rem;
 		}
 
 		.qm-toc-title {
@@ -140,7 +179,8 @@
 			flex-shrink: 0;
 		}
 		.qm-toc-chapter:hover .qm-toc-icon,
-		.qm-toc-section:hover .qm-toc-icon {
+		.qm-toc-section:hover .qm-toc-icon,
+		.qm-toc-goal:hover .qm-toc-icon {
 			color: #f672a7;
 		}
 	</style>
