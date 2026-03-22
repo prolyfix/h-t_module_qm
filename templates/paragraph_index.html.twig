@@ -4,11 +4,10 @@
 	<div class="card mt-2">
 		<div class="card-header d-flex align-items-center gap-2" style="background-color:#f672a7;color:#fff;">
 			<i class="fas fa-book me-1"></i>
-			<strong>Table of Contents</strong>
+			<strong>{{ 'qm.toc.title'|trans }}</strong>
 			{% if rootParagraphs is defined %}
 				<span class="badge bg-white ms-auto" style="color:#f672a7;">
-					{{ rootParagraphs|length }}
-					chapter{{ rootParagraphs|length != 1 ? 's' : '' }}
+					{{ rootParagraphs|length }} {{ 'qm.toc.chapter_label'|trans({'%count%': rootParagraphs|length}) }}
 				</span>
 			{% endif %}
 		</div>
@@ -28,10 +27,10 @@
 									<span class="badge rounded-pill bg-light text-dark me-2"><i class="fas fa-link me-1"></i>{{ paragraph.linkedEntities|length }}</span>
 								{% endif %}
 								{% if paragraph.filename %}
-									<i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
+									<i class="fas fa-file-alt qm-toc-icon" title="{{ 'qm.toc.has_document'|trans }}"></i>
 								{% endif %}
 								{% if paragraph.description %}
-									<i class="fas fa-align-left qm-toc-icon ms-1" title="Has description"></i>
+									<i class="fas fa-align-left qm-toc-icon ms-1" title="{{ 'qm.toc.has_description'|trans }}"></i>
 								{% endif %}
 							</a>
 							{% if paragraph.children|length > 0 %}
@@ -47,10 +46,10 @@
 											<span class="badge rounded-pill bg-light text-dark me-2"><i class="fas fa-link me-1"></i>{{ child.linkedEntities|length }}</span>
 										{% endif %}
 										{% if child.filename %}
-											<i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
+											<i class="fas fa-file-alt qm-toc-icon" title="{{ 'qm.toc.has_document'|trans }}"></i>
 										{% endif %}
 										{% if child.description %}
-											<i class="fas fa-align-left qm-toc-icon ms-1" title="Has description"></i>
+											<i class="fas fa-align-left qm-toc-icon ms-1" title="{{ 'qm.toc.has_description'|trans }}"></i>
 										{% endif %}
 									</a>
 									{% if child.children|length > 0 %}
@@ -66,16 +65,16 @@
 													<span class="badge rounded-pill bg-light text-dark me-2"><i class="fas fa-link me-1"></i>{{ grandchild.linkedEntities|length }}</span>
 												{% endif %}
 												{% if grandchild.filename %}
-													<i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
+													<i class="fas fa-file-alt qm-toc-icon" title="{{ 'qm.toc.has_document'|trans }}"></i>
 												{% endif %}
 												{% if grandchild.description %}
-													<i class="fas fa-align-left qm-toc-icon ms-1" title="Has description"></i>
+													<i class="fas fa-align-left qm-toc-icon ms-1" title="{{ 'qm.toc.has_description'|trans }}"></i>
 												{% endif %}
 											</a>
 											{% if grandchild.children|length > 0 %}
 												{% for g, goal in grandchild.children|sort((a, b) => (a.creationDate ? a.creationDate|date('U') : 0) <=> (b.creationDate ? b.creationDate|date('U') : 0)) %}
 													<a href="{{ ea_url().setController('Prolyfix\\QmBundle\\Controller\\Admin\\ParagraphCrudController').setEntityId(goal.id).setAction('detail') }}" class="qm-toc-goal" style="margin-left:4em">
-														<span class="qm-toc-num">Ziel {{ g + 1 }}</span>
+														<span class="qm-toc-num">{{ 'qm.toc.goal'|trans }} {{ g + 1 }}</span>
 														<span class="qm-toc-title">{{ goal.title }}</span>
 														<span class="qm-toc-dots"></span>
 														{% if goal.totalActionsCount > 0 %}
@@ -85,10 +84,10 @@
 															<span class="badge rounded-pill bg-light text-dark me-2"><i class="fas fa-link me-1"></i>{{ goal.linkedEntities|length }}</span>
 														{% endif %}
 														{% if goal.filename %}
-															<i class="fas fa-file-alt qm-toc-icon" title="Has attached document"></i>
+															<i class="fas fa-file-alt qm-toc-icon" title="{{ 'qm.toc.has_document'|trans }}"></i>
 														{% endif %}
 														{% if goal.description %}
-															<i class="fas fa-align-left qm-toc-icon ms-1" title="Has description"></i>
+															<i class="fas fa-align-left qm-toc-icon ms-1" title="{{ 'qm.toc.has_description'|trans }}"></i>
 														{% endif %}
 													</a>
 												{% endfor %}
@@ -102,9 +101,7 @@
 				</div>
 			{% else %}
 				<p class="text-muted py-3 text-center">
-					<i class="fas fa-book-open me-2"></i>No paragraphs found. Use the
-					<strong>Add Paragraph</strong>
-					button above.
+					<i class="fas fa-book-open me-2"></i>{{ 'qm.toc.empty'|trans }}
 				</p>
 			{% endif %}
 		</div>
