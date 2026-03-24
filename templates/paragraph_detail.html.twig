@@ -144,7 +144,7 @@
 
 
     {# ── Linked documents overview ── #}
-    {% if linkedEntities is defined and linkedEntities|length > 0 %}
+    {% if paragraphInstance is defined %}
     <div class="card mt-4">
         <div class="card-header d-flex align-items-center gap-2" style="background-color:#f672a7;color:#fff;">
             <i class="fas fa-book-open"></i>
@@ -156,16 +156,15 @@
                     {{ linkedEntities|length }}
                 </span>
             {% endif %}
-            {% if paragraphInstance is defined %}
-                <span class="ms-auto" data-controller="modal-form">
-                    <a href="{{ path('qm_paragraph_attach_media', {paragraphId: paragraphInstance.id}) }}" class="btn btn-sm" data-action="click->modal-form#openModal" data-url="{{ path('qm_paragraph_attach_media', {paragraphId: paragraphInstance.id}) }}" style="background-color:#fff;color:#f672a7;border:none;">
-                        <i class="fas fa-paperclip me-1"></i>
-                        Attach file
-                    </a>
-                </span>
-            {% endif %}
+            <span class="ms-auto" data-controller="modal-form">
+                <a href="{{ path('qm_paragraph_attach_media', {paragraphId: paragraphInstance.id}) }}" class="btn btn-sm" data-action="click->modal-form#openModal" data-url="{{ path('qm_paragraph_attach_media', {paragraphId: paragraphInstance.id}) }}" style="background-color:#fff;color:#f672a7;border:none;">
+                    <i class="fas fa-paperclip me-1"></i>
+                    Attach file
+                </a>
+            </span>
         </div>
         <div class="card-body p-0">
+            {% if linkedEntities is defined and linkedEntities|length > 0 %}
             <table class="table table-hover table-sm mb-0" id="qm-linked-entities-table">
                     <thead class="table-light">
                         <tr>
@@ -270,6 +269,9 @@
                         render();
                     })();
                     </script>
+            {% endif %}
+            {% else %}
+                <p class="text-muted p-3 mb-0">No linked documents yet.</p>
             {% endif %}
         </div>
     </div>
