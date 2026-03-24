@@ -70,6 +70,17 @@
                             <td>{{ action.hint ?: '—' }}</td>
                             <td class="text-muted">{{ action.creationDate ? action.creationDate|date('Y-m-d H:i') : '' }}</td>
                         </tr>
+                        {% if action.comment %}
+                        <tr class="table-warning">
+                            <td colspan="4" class="ps-3 py-1">
+                                <i class="fas fa-comment-alt me-1 text-muted"></i>
+                                <span>{{ action.comment }}</span>
+                                {% if action.commentDate %}
+                                    <small class="text-muted ms-2">({{ action.commentDate|date('Y-m-d H:i') }})</small>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
                     {% endfor %}
                 </tbody>
             </table>

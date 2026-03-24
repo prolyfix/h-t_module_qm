@@ -21,6 +21,9 @@ class ActionType extends AbstractType
             ])
             ->add('done', CheckboxType::class, [
                 'required' => false,
+            ])
+            ->add('comment', TextareaType::class, [
+                'required' => false,
             ]);
     }
 
