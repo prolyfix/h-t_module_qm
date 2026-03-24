@@ -36,6 +36,12 @@ class Action extends TimeData
     #[Groups(['module_configuration_value:read', 'module_configuration_value:write'])]
     private bool $done = false;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $comment = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $commentDate = null;
+
     public function __construct()
     {
         parent::__construct();
@@ -97,5 +103,27 @@ class Action extends TimeData
     public function __toString(): string
     {
         return $this->indication ?? ('Action #' . $this->id);
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?string $comment): static
+    {
+        $normalized = ($comment === '' || $comment === null) ? null : $comment;
+
+        if ($normalized !== $this->comment) {
+            $this->comment = $normalized;
+            $this->commentDate = $normalized !== null ? new \DateTimeImmutable() : null;
+        }
+
+        return $this;
+    }
+
+    public function getCommentDate(): ?\DateTimeImmutable
+    {
+        return $this->commentDate;
     }
 }
