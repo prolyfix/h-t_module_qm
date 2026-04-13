@@ -11,7 +11,7 @@
         <div class="card-header d-flex align-items-center gap-2" style="background-color:#f672a7;color:#fff;">
             <i class="fas fa-sitemap"></i>
             <strong>
-                Child Paragraphs
+                {{ 'qm.paragraph_detail.child_paragraphs'|trans }}
             </strong>
             <span class="badge bg-white ms-1" style="color:#f672a7;">
                 {{ entity.instance.children|length }}
@@ -39,7 +39,7 @@
         <div class="card-header d-flex align-items-center gap-2" style="background-color:#f672a7;color:#fff;">
             <i class="fas fa-tasks"></i>
             <strong>
-                Actions
+                {{ 'qm.paragraph_detail.actions'|trans }}
             </strong>
             <span class="badge bg-white ms-1" style="color:#f672a7;">
                 {{ entity.instance.doneActionsCount }}/{{ entity.instance.totalActionsCount }}
@@ -49,10 +49,10 @@
             <table class="table table-sm table-hover mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th class="text-center" style="width:70px;">Done</th>
-                        <th>Indication</th>
-                        <th>Hint</th>
-                        <th style="width:170px;">Created</th>
+                        <th class="text-center" style="width:70px;">{{ 'qm.paragraph_detail.done'|trans }}</th>
+                        <th>{{ 'qm.paragraph_detail.indication'|trans }}</th>
+                        <th>{{ 'qm.paragraph_detail.hint'|trans }}</th>
+                        <th style="width:170px;">{{ 'qm.paragraph_detail.created'|trans }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -133,7 +133,7 @@
             patchActionDone(actionId, desiredValue)
                 .catch(function () {
                     target.checked = previousValue;
-                    window.alert('Could not update action status.');
+                    window.alert('{{ 'qm.paragraph_detail.could_not_update_action_status'|trans|e('js') }}');
                 })
                 .finally(function () {
                     target.disabled = false;
@@ -149,7 +149,7 @@
         <div class="card-header d-flex align-items-center gap-2" style="background-color:#f672a7;color:#fff;">
             <i class="fas fa-book-open"></i>
             <strong>
-                Linked Documents
+                {{ 'qm.paragraph_detail.linked_documents'|trans }}
             </strong>
             {% if linkedEntities is defined %}
                 <span class="badge bg-white ms-1" style="color:#f672a7;">
@@ -159,7 +159,7 @@
             <span class="ms-auto" data-controller="modal-form">
                 <a href="{{ path('qm_paragraph_attach_media', {paragraphId: paragraphInstance.id}) }}" class="btn btn-sm" data-action="click->modal-form#openModal" data-url="{{ path('qm_paragraph_attach_media', {paragraphId: paragraphInstance.id}) }}" style="background-color:#fff;color:#f672a7;border:none;">
                     <i class="fas fa-paperclip me-1"></i>
-                    Attach file
+                    {{ 'qm.paragraph_detail.attach_file'|trans }}
                 </a>
             </span>
         </div>
@@ -169,19 +169,19 @@
                     <thead class="table-light">
                         <tr>
                             <th>
-                                Entity
+                                {{ 'qm.paragraph_detail.entity'|trans }}
                             </th>
                             <th>
-                                Name / ID
+                                {{ 'qm.paragraph_detail.name_or_id'|trans }}
                             </th>
                             <th>
-                                Document type
+                                {{ 'qm.paragraph_detail.document_type'|trans }}
                             </th>
                             <th class="text-center">
-                                Template
+                                {{ 'qm.paragraph_detail.template'|trans }}
                             </th>
                             <th class="text-end">
-                                Actions
+                                {{ 'qm.paragraph_detail.actions'|trans }}
                             </th>
                         </tr>
                     </thead>
@@ -217,14 +217,14 @@
                                     {% if le.url is not null %}
                                         <a href="{{ le.url }}" target="_blank" class="btn btn-xs btn-sm" style="background-color:#f672a7;color:#fff;">
                                             <i class="fas fa-link me-1"></i>
-                                            Link
+                                            {{ 'qm.paragraph_detail.link'|trans }}
                                         </a>
                                     {% endif %}
 
                                     {% if linkedDocumentUrls is defined and linkedDocumentUrls[le.id] is defined %}
                                         <a href="{{ linkedDocumentUrls[le.id] }}" class="btn btn-xs btn-sm" style="background-color:#f672a7;color:#fff;">
                                             <i class="fas fa-external-link-alt me-1"></i>
-                                            Open
+                                            {{ 'qm.paragraph_detail.open'|trans }}
                                         </a>
                                     {% endif %}
 
@@ -245,10 +245,10 @@
                         <small class="text-muted qm-page-info"></small>
                         <div class="btn-group btn-group-sm">
                             <button class="btn btn-outline-secondary" id="qm-prev-page" type="button">
-                                &laquo; Prev
+                                &laquo; {{ 'qm.paragraph_detail.prev'|trans }}
                             </button>
                             <button class="btn btn-outline-secondary" id="qm-next-page" type="button">
-                                Next &raquo;
+                                {{ 'qm.paragraph_detail.next'|trans }} &raquo;
                             </button>
                         </div>
                     </div>
@@ -260,7 +260,7 @@
                         const info = document.querySelector('.qm-page-info');
                         function render() {
                             rows.forEach((r, i) => r.style.display = (i >= page * perPage && i < (page + 1) * perPage) ? '' : 'none');
-                            info.textContent = 'Showing ' + (page * perPage + 1) + '–' + Math.min((page + 1) * perPage, rows.length) + ' of ' + rows.length;
+                            info.textContent = '{{ 'qm.paragraph_detail.showing'|trans|e('js') }} ' + (page * perPage + 1) + '–' + Math.min((page + 1) * perPage, rows.length) + ' {{ 'qm.paragraph_detail.of'|trans|e('js') }} ' + rows.length;
                             document.getElementById('qm-prev-page').disabled = page === 0;
                             document.getElementById('qm-next-page').disabled = (page + 1) * perPage >= rows.length;
                         }
@@ -271,7 +271,7 @@
                     </script>
             {% endif %}
             {% else %}
-                <p class="text-muted p-3 mb-0">No linked documents yet.</p>
+                <p class="text-muted p-3 mb-0">{{ 'qm.paragraph_detail.no_linked_documents_yet'|trans }}</p>
             {% endif %}
         </div>
     </div>
