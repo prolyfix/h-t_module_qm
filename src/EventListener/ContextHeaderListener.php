@@ -94,7 +94,7 @@ class ContextHeaderListener
                 $sidebarUrl
             );
         }
-
+        
         $data['html'] = $headerHtml;
         $event->setData($data);
     }
